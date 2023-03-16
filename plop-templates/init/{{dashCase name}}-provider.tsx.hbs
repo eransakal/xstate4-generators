@@ -1,0 +1,64 @@
+import React, { useEffect, useMemo } from 'react';
+import {
+  {{pascalCase name}}MachineContext,
+  {{pascalCase name}}MachineEvents,
+  {{pascalCase name}}MachineId,
+  {{pascalCase name}}MachineService,
+  {{pascalCase name}}MachineEventsTypes,
+} from './types';
+import { create{{pascalCase name}}Machine } from './create-quick-polls-machine';
+import { useMachine } from '@xstate/react';
+
+{{#if isKME}}
+import {
+    XStateMachineLogger,
+    XStateMachineLogSenderTypes,
+  } from '@kme/room-diagnostics-utils-diagnostics';
+
+const {{pascalCase name}}MachineLogger =  new XStateMachineLogger({
+    machineId: QuickPollMachineId,
+    sender: '{{pascalCase name}}Provider',    
+    senderType: XStateMachineLogSenderTypes.Machine,
+  });(
+);
+{{/if}}
+
+export const {{pascalCase name}}Context = React.createContext<{
+  machineService: {{pascalCase name}}MachineService;
+}>(null as any);
+
+export const {{pascalCase name}}Provider: React.FC = ({ children }) => {
+ 
+  const machine = useMemo(
+    () =>
+      create{{pascalCase name}}Machine().withContext(),
+    []
+  );
+
+  const [, , machineService] = useMachine<
+    {{pascalCase name}}MachineContext,
+    {{pascalCase name}}MachineEvents
+  >(machine, {
+    actions: { },
+    services: { },
+    guards: { },
+  });
+
+{{#if isKME}}
+  useXStateDiagnostics({
+   machineId: {{pascalCase name}}MachineId,
+    machineLogger: {{pascalCase name}}MachineLogger,
+    service: machineService,
+  });
+{{/if}}
+
+  const providerValue = useMemo(() => {
+    return { machineService };
+  }, [machineService]);
+
+  return (
+    <{{pascalCase name}}Context.Provider value={providerValue}>
+      {children}
+    </{{pascalCase name}}Context.Provider>
+  );
+};

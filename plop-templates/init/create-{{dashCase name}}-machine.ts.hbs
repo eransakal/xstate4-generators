@@ -1,0 +1,23 @@
+import { createMachine } from 'xstate';
+import {
+  {{pascalCase name}}Context,
+  {{pascalCase name}}Events,
+  {{pascalCase name}}EventsTypes,
+  {{pascalCase name}}MachineId,  
+} from './types';
+
+export const create{{pascalCase name}}Machine = () => {
+  return createMachine<{{pascalCase name}}Context, {{pascalCase name}}Events>({
+    id: {{pascalCase name}}MachineId,
+    preserveActionOrder: true,
+    initial: 'idle',
+    entry: [],    
+    on: {
+        [{{pascalCase name}}EventsTypes.Example]: {}
+    },
+    states: {
+      preparing: {},
+      idle: {},      
+    },
+  });
+};
